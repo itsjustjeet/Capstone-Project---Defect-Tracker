@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Defect Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    :root {
+      --light-bg: #f8f9fa;
+      --light-card: #ffffff;
+      --light-text: #2d3748;
+      --light-border: #e2e8f0;
+      --light-accent: #6366f1;
+      --dark-bg: #0f172a;
+      --dark-card: #1e293b;
+      --dark-text: #cbd5e1;
+      --dark-border: #475569;
+      --dark-accent: #818cf8
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--light-bg);
+      color: var(--light-text);
+      transition: background 0.4s ease, color 0.4s ease
+    }
+
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: var(--dark-text)
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+      color: var(--light-text);
+      padding: 1.5rem 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      border-bottom: 1px solid var(--light-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start
+    }
+
+    body.dark-mode .app-header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-bottom-color: var(--dark-border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3)
+    }
+
+    .header-left {
+      flex: 1
+    }
+
+    .app-header h1 {
+      margin: 0 0 1rem 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--light-border);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--light-text);
+      transition: all 0.3s;
+      font-size: 0.9rem
+    }
+
+    body.dark-mode .theme-toggle {
+      background: var(--dark-border);
+      color: var(--dark-text)
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem
+    }
+
+    .nav-tab {
+      background: transparent;
+      color: var(--light-text);
+      border: none;
+      padding: 0.6rem 1.2rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      position: relative;
+      font-size: 0.95rem
+    }
+
+    body.dark-mode .nav-tab {
+      color: var(--dark-text)
+    }
+
+    .nav-tab:hover {
+      color: var(--light-accent);
+      transform: translateY(-2px)
+    }
+
+    body.dark-mode .nav-tab:hover {
+      color: var(--dark-accent)
+    }
+
+    .nav-tab::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: var(--light-accent);
+      transition: all 0.3s;
+      transform: translateX(-50%)
+    }
+
+    body.dark-mode .nav-tab::after {
+      background: var(--dark-accent)
+    }
+
+    .nav-tab.active::after {
+      width: 70%;
+      background: var(--light-accent)
+    }
+
+    body.dark-mode .nav-tab.active::after {
+      background: var(--dark-accent)
+    }
+
+    .app-main {
+      flex: 1;
+      padding: 2.5rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%
+    }
+
+    .stat-card {
+      background: var(--light-card);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--light-border);
+      transition: all 0.3s
+    }
+
+    body.dark-mode .stat-card {
+      background: var(--dark-card);
+      border-color: var(--dark-border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3)
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1)
+    }
+
+    body.dark-mode .stat-card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4)
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0.5rem 0
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 500
+    }
+
+    body.dark-mode .stat-label {
+      color: #94a3b8
+    }
+
+    .kanban-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem
+    }
+
+    .kanban-column {
+      background: var(--light-card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--light-border);
+      transition: all 0.3s
+    }
+
+    body.dark-mode .kanban-column {
+      background: var(--dark-card);
+      border-color: var(--dark-border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3)
+    }
+
+    .kanban-column h3 {
+      margin: 0 0 1.5rem 0;
+      color: var(--light-text);
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--light-border)
+    }
+
+    body.dark-mode .kanban-column h3 {
+      border-bottom-color: var(--dark-border)
+    }
+
+    .card {
+      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+      border: 1px solid var(--light-border);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative
+    }
+
+    body.dark-mode .card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-color: var(--dark-border)
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(99, 102, 241, 0.15);
+      border-color: var(--light-accent)
+    }
+
+    body.dark-mode .card:hover {
+      box-shadow: 0 8px 16px rgba(129, 140, 248, 0.2);
+      border-color: var(--dark-accent)
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin: 0.5rem 0;
+      color: var(--light-text);
+      font-size: 1rem
+    }
+
+    body.dark-mode .card-title {
+      color: var(--dark-text)
+    }
+
+    .card-assigned {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 0.5rem
+    }
+
+    body.dark-mode .card-assigned {
+      color: #94a3b8
+    }
+
+    .form-container {
+      background: var(--light-card);
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--light-border)
+    }
+
+    body.dark-mode .form-container {
+      background: var(--dark-card);
+      border-color: var(--dark-border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3)
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--light-text);
+      font-size: 0.95rem
+    }
+
+    body.dark-mode .form-group label {
+      color: var(--dark-text)
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--light-bg);
+      border: 1px solid var(--light-border);
+      border-radius: 8px;
+      color: var(--light-text);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s
+    }
+
+    body.dark-mode .form-group input,
+    body.dark-mode .form-group textarea,
+    body.dark-mode .form-group select {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--dark-border);
+      color: var(--dark-text)
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--light-accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1)
+    }
+
+    body.dark-mode .form-group input:focus,
+    body.dark-mode .form-group textarea:focus,
+    body.dark-mode .form-group select:focus {
+      border-color: var(--dark-accent);
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2)
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      display: inline-block
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3)
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4)
+    }
+
+    .btn-secondary {
+      background: var(--light-border);
+      color: var(--light-text);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06)
+    }
+
+    body.dark-mode .btn-secondary {
+      background: var(--dark-border);
+      color: var(--dark-text)
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-content {
+      background: var(--light-card);
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--light-border)
+    }
+
+    body.dark-mode .modal-content {
+      background: var(--dark-card);
+      border-color: var(--dark-border);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5)
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--light-border);
+      padding-bottom: 1rem
+    }
+
+    body.dark-mode .modal-header {
+      border-bottom-color: var(--dark-border)
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: var(--light-text);
+      font-size: 1.3rem
+    }
+
+    body.dark-mode .modal-header h3 {
+      color: var(--dark-text)
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.3s
+    }
+
+    .close-btn:hover {
+      color: var(--light-accent);
+      transform: rotate(90deg)
+    }
+
+    .app-footer {
+      background: var(--light-card);
+      border-top: 1px solid var(--light-border);
+      color: var(--light-text);
+      text-align: center;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500
+    }
+
+    body.dark-mode .app-footer {
+      background: var(--dark-card);
+      border-top-color: var(--dark-border);
+      color: var(--dark-text)
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script>
+    const bugs = ['Login blank', 'DB timeout', 'Mobile broken', 'Memory leak', 'Rate limit', 'Cache bug', 'Export crash', 'Paging error', 'Email fail', 'Form errors', 'Graph lag', 'Dark stuck'];
+    const descs = ['After cache clear', 'POST timeout', 'Under 400px', 'Grows leaks', 'Not limited', 'Stale data', '100MB+', 'After N pages', 'SMTP fail', 'Silent fail', '10k+ points', 'Reverts'];
+    const devs = ['John', 'Sarah', 'Mike', 'Lisa', 'Alex', 'Emma'];
+    const api = { async getDefects() { const r = await fetch('/api/defects?t=' + Date.now()); return (await r.json()).data || []; }, async createDefect(p) { const r = await fetch('/api/defects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }); return r.json(); }, async updateDefect(id, p) { const r = await fetch('/api/defects/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }); return r.json(); }, async deleteDefect(id) { const r = await fetch('/api/defects/' + id, { method: 'DELETE' }); return r.json(); }, async getStats() { const r = await fetch('/api/stats?t=' + Date.now()); return (await r.json()).data; } };
+    let s = { defects: [], stats: null, v: 'dashboard', sel: null, load: 1, theme: localStorage.getItem('theme') || 'light' };
+    let modalReady = 0;
+    function toggleTheme() { s.theme = s.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('theme', s.theme); document.body.classList.toggle('dark-mode', s.theme === 'dark'); gsap.to('body', { duration: 0.4, opacity: 0.8, onComplete: () => { gsap.to('body', { duration: 0.2, opacity: 1 }); render(); } }); }
+    function render() { const root = document.getElementById('root'); if (s.load && s.v !== 'about') { root.innerHTML = '<div class="app"><div class="app-main" style="display:flex;align-items:center;justify-content:center;min-height:400px"><div style="text-align:center"><div style="font-size:1.2rem;font-weight:600;margin-bottom:1rem">Loading...</div></div></div></div>'; return; } let c = ''; if (s.v === 'about') c = '<div style="max-width:800px;margin:0 auto"><h2 style="font-size:1.8rem;font-weight:700;margin-top:0">Defect Tracking System</h2><p style="font-size:1.1rem;line-height:1.6">A lightweight, simple platform for tracking software bugs and tasks.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-top:2rem"><div style="padding:1.5rem;background:var(--light-card);border-radius:12px;border:1px solid var(--light-border)"><h3 style="margin-top:0;color:var(--light-accent)">Features</h3><ul style="list-style:none;padding:0;line-height:2"><li>✓ Real-time tracking</li><li>✓ Kanban board</li><li>✓ Priority levels</li><li>✓ Team assignment</li><li>✓ Theme switcher</li></ul></div><div style="padding:1.5rem;background:var(--light-card);border-radius:12px;border:1px solid var(--light-border)"><h3 style="margin-top:0;color:var(--light-accent)">Technology</h3><ul style="list-style:none;padding:0;line-height:2"><li>✓ Node.js Backend</li><li>✓ Vanilla JavaScript</li><li>✓ REST API</li><li>✓ GSAP Animations</li></ul></div></div></div>'; else if (s.v === 'dashboard') c = '<div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem">' + (s.stats ? ['<div class="stat-card"><div class="stat-label">Total Defects</div><div class="stat-number">' + s.stats.totalDefects + '</div></div>', '<div class="stat-card"><div class="stat-label">Open</div><div class="stat-number">' + (s.stats.byStatus.Open || 0) + '</div></div>', '<div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-number">' + (s.stats.byStatus['In Progress'] || 0) + '</div></div>', '<div class="stat-card"><div class="stat-label">Resolved</div><div class="stat-number">' + (s.stats.byStatus.Closed || 0) + '</div></div>'].join('') : '') + '</div><div class="kanban-container">' + ['Open', 'In Progress', 'Resolved', 'Closed'].map(st => { const items = s.defects.filter(d => d.status === st); return '<div class="kanban-column"><h3>' + st + ' (' + items.length + ')</h3>' + (items.map(d => '<div class="card" onclick="pick(\'' + d.id + '\')"><div class="card-title">' + d.title + '</div><div class="card-assigned">' + (d.assignedTo || 'Unassigned') + '</div><div style="font-size:0.8rem;color:#6366f1;margin-top:0.5rem">' + d.priority + '</div></div>').join('') || '<p style="text-align:center;color:#94a3b8">No defects</p>') + '</div>'; }).join('') + '</div></div>'; else if (s.v === 'form') c = '<div class="form-container"><form onsubmit="submitDefect(event)"><div class="form-group"><label>Issue Title</label><input type="text" id="title" placeholder="e.g., Login page not loading" required></div><div class="form-group"><label>Description</label><textarea id="desc" rows="4" placeholder="Describe the issue in detail..." required></textarea></div><div class="form-group"><label>Priority Level</label><select id="pri" required><option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option><option value="Critical">Critical</option></select></div><div style="display:flex;gap:1rem;margin-top:2rem"><button type="submit" class="btn btn-primary">Submit Report</button><button type="button" class="btn btn-secondary" onclick="switchv(\'dashboard\')">Cancel</button></div></form></div>'; let m = ''; if (s.sel) { const d = s.sel; m = '<div class="modal-overlay" onclick="closemod()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><h3>Edit Defect</h3><button class="close-btn" onclick="closemod()">✕</button></div><div style="margin-bottom:1.5rem"><strong style="display:block;margin-bottom:0.5rem">Title</strong><div style="font-size:1.1rem;color:var(--light-text)">' + d.title + '</div></div><div style="margin-bottom:1.5rem"><strong style="display:block;margin-bottom:0.5rem">Status</strong><select id="sta" style="width:100%;padding:0.75rem;border:1px solid var(--light-border);border-radius:8px;font-size:1rem"><option value="Open" ' + (d.status === "Open" ? "selected" : "") + '>Open</option><option value="In Progress" ' + (d.status === "In Progress" ? "selected" : "") + '>In Progress</option><option value="Resolved" ' + (d.status === "Resolved" ? "selected" : "") + '>Resolved</option><option value="Closed" ' + (d.status === "Closed" ? "selected" : "") + '>Closed</option></select></div><div style="margin-bottom:1.5rem"><strong style="display:block;margin-bottom:0.5rem">Assign To</strong><input type="text" id="asn" value="' + (d.assignedTo || "") + '" placeholder="Enter name" style="width:100%;padding:0.75rem;border:1px solid var(--light-border);border-radius:8px"></div><div style="display:flex;gap:1rem"><button class="btn btn-primary" onclick="save()">Save</button><button class="btn" style="background:#ef4444;color:white;box-shadow:0 4px 12px rgba(239,68,68,0.3)" onclick="del()">Delete</button><button class="btn btn-secondary" onclick="closemod()">Close</button></div></div></div>'; } root.innerHTML = '<div class="app"><header class="app-header"><div class="header-left"><h1>Defect Tracker</h1><nav class="nav-tabs"><button class="nav-tab ' + (s.v === 'dashboard' ? 'active' : '') + '" onclick="switchv(\'dashboard\')">Dashboard</button><button class="nav-tab ' + (s.v === 'form' ? 'active' : '') + '" onclick="switchv(\'form\')">Report</button><button class="nav-tab ' + (s.v === 'about' ? 'active' : '') + '" onclick="switchv(\'about\')">About</button></nav></div><button class="theme-toggle" onclick="toggleTheme()">' + ((s.theme === 'dark' ? '☀️ Light' : '🌙 Dark')) + '</button></header><div class="app-main">' + c + m + '</div><footer class="app-footer">Made by Jeeten Misra</footer></div>'; if (!s.sel) { gsap.from('.app-main > *', { duration: 0.5, y: 20, opacity: 0, stagger: 0.1 }); gsap.from('.stat-card', { duration: 0.6, y: 20, opacity: 0, stagger: 0.05 }); gsap.from('.card', { duration: 0.5, y: 15, opacity: 0, stagger: 0.02 }); } }
+    function switchv(v) { s.v = v; s.load = 1; load(); }
+    function pick(id) { modalReady = 0; s.sel = s.defects.find(d => d.id === id); render(); gsap.fromTo('.modal-content', { scale: 0.9, opacity: 0 }, { duration: 0.4, scale: 1, opacity: 1, clearProps: "all" }); setTimeout(() => modalReady = 1, 500); }
+    function closemod() { if (!modalReady) return; s.sel = null; gsap.to('.modal-overlay', { duration: 0.3, opacity: 0, onComplete: () => { render(); } }); }
+    async function submitDefect(e) { e.preventDefault(); const t = document.getElementById('title').value; const d = document.getElementById('desc').value; const p = document.getElementById('pri').value; try { const r = await api.createDefect({ title: t, description: d, priority: p }); if (r.success) { gsap.to('form', { duration: 0.3, opacity: 0, onComplete: () => { switchv('dashboard'); } }); } } catch (e) { } }
+    async function save() { const st = document.getElementById('sta').value; const a = document.getElementById('asn').value; try { const r = await api.updateDefect(s.sel.id, { status: st, assignedTo: a || null }); if (r.success) { gsap.to('.modal-overlay', { duration: 0.3, opacity: 0, onComplete: async () => { s.sel = null; await load(); render(); } }); } } catch (e) { } }
+    async function del() { try { const r = await api.deleteDefect(s.sel.id); if (r.success) { gsap.to('.modal-overlay', { duration: 0.3, opacity: 0, onComplete: async () => { s.sel = null; await load(); render(); } }); } } catch (e) { } }
+    async function load() { s.load = 1; render(); try { s.defects = await api.getDefects(); s.stats = await api.getStats(); } catch (e) { } s.load = 0; render(); }
+    document.body.classList.toggle('dark-mode', s.theme === 'dark');
+    load();
+  </script>
+</body>
+
+</html>
