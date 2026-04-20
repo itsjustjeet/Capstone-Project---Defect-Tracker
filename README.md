@@ -34,13 +34,9 @@ The **Defect Tracking & Management System (DTMS)** solves this by providing a co
 
 ## 📸 Screenshots
 
-
-
 | Dashboard Overview | Issue Reporting | Edit / Assignment Modal |
 |:---:|:---:|:---:|
-| <img width="2523" height="1291" alt="Screenshot 2026-04-21 001547" src="https://github.com/user-attachments/assets/8c998d71-0c43-420c-b575-900d843e5bc4" /> |
-| <img width="2528" height="1287" alt="Screenshot 2026-04-21 001711" src="https://github.com/user-attachments/assets/d0489f92-b6c3-4adc-89a1-c626675b7779" /> |
-| <img width="2520" height="1287" alt="image" src="https://github.com/user-attachments/assets/dd83e894-f876-417d-89d2-62a6e07837d8" /> |
+| <img src="https://github.com/user-attachments/assets/8c998d71-0c43-420c-b575-900d843e5bc4" alt="Dashboard Overview" width="100%" /> | <img src="https://github.com/user-attachments/assets/d0489f92-b6c3-4adc-89a1-c626675b7779" alt="Issue Reporting" width="100%" /> | <img src="https://github.com/user-attachments/assets/dd83e894-f876-417d-89d2-62a6e07837d8" alt="Edit Modal" width="100%" /> |
 
 ## ⚙️ Installation & Setup
 
